@@ -42,40 +42,36 @@ object MqttSettings {
     private const val MAX_PORT = 65535
 
     fun isEnabled(context: Context): Boolean =
-        PreferenceManager.getDefaultSharedPreferences(context)
-            .getBoolean(SETTINGS_SHOW_MQTT_BRICKS, false)
+        prefs(context).getBoolean(SETTINGS_SHOW_MQTT_BRICKS, false)
 
     fun setEnabled(context: Context, enabled: Boolean) {
-        PreferenceManager.getDefaultSharedPreferences(context).edit()
+        prefs(context).edit()
             .putBoolean(SETTINGS_SHOW_MQTT_BRICKS, enabled)
             .apply()
     }
 
     fun brokerHost(context: Context): String =
-        PreferenceManager.getDefaultSharedPreferences(context)
-            .getString(MQTT_BROKER_HOST, DEFAULT_BROKER_HOST) ?: DEFAULT_BROKER_HOST
+        prefs(context).getString(MQTT_BROKER_HOST, DEFAULT_BROKER_HOST) ?: DEFAULT_BROKER_HOST
 
     fun brokerPort(context: Context): Int {
-        val stored = PreferenceManager.getDefaultSharedPreferences(context)
-            .getString(MQTT_BROKER_PORT, DEFAULT_BROKER_PORT.toString()) ?: DEFAULT_BROKER_PORT.toString()
+        val stored = prefs(context).getString(MQTT_BROKER_PORT, DEFAULT_BROKER_PORT.toString())
+            ?: DEFAULT_BROKER_PORT.toString()
         return stored.toIntOrNull()?.takeIf { isValidPort(it) } ?: DEFAULT_BROKER_PORT
     }
 
     fun isTlsEnabled(context: Context): Boolean =
-        PreferenceManager.getDefaultSharedPreferences(context)
-            .getBoolean(MQTT_USE_TLS, false)
+        prefs(context).getBoolean(MQTT_USE_TLS, false)
 
     fun username(context: Context): String =
-        PreferenceManager.getDefaultSharedPreferences(context)
-            .getString(MQTT_USERNAME, "") ?: ""
+        prefs(context).getString(MQTT_USERNAME, "") ?: ""
 
     fun password(context: Context): String =
-        PreferenceManager.getDefaultSharedPreferences(context)
-            .getString(MQTT_PASSWORD, "") ?: ""
+        prefs(context).getString(MQTT_PASSWORD, "") ?: ""
 
     fun clientId(context: Context): String =
-        PreferenceManager.getDefaultSharedPreferences(context)
-            .getString(MQTT_CLIENT_ID, "") ?: ""
+        prefs(context).getString(MQTT_CLIENT_ID, "") ?: ""
 
     fun isValidPort(port: Int): Boolean = port in MIN_PORT..MAX_PORT
+
+    private fun prefs(context: Context) = PreferenceManager.getDefaultSharedPreferences(context)
 }
