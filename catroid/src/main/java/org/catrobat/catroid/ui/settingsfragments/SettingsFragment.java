@@ -131,6 +131,9 @@ public class SettingsFragment extends PreferenceFragment {
 	public static final String RASPI_PORT = "setting_raspi_port_preference";
 	public static final String RASPI_VERSION_SPINNER = "setting_raspi_version_preference";
 
+	public static final String MQTT_SCREEN_KEY = "settings_mqtt_screen";
+	public static final String SETTINGS_SHOW_MQTT_BRICKS = "setting_mqtt_bricks";
+
 	public static final String SETTINGS_CRASH_REPORTS = "setting_enable_crash_reports";
 	public static final String TAG = SettingsFragment.class.getSimpleName();
 
@@ -182,6 +185,12 @@ public class SettingsFragment extends PreferenceFragment {
 			CheckBoxPreference raspiPreference = (CheckBoxPreference) findPreference(SETTINGS_SHOW_RASPI_BRICKS);
 			raspiPreference.setEnabled(false);
 			screen.removePreference(raspiPreference);
+		}
+
+		if (!BuildConfig.FEATURE_MQTT_ENABLED) {
+			PreferenceScreen mqttPreference = (PreferenceScreen) findPreference(MQTT_SCREEN_KEY);
+			mqttPreference.setEnabled(false);
+			screen.removePreference(mqttPreference);
 		}
 
 		if (!BuildConfig.FEATURE_CAST_ENABLED) {
@@ -260,6 +269,12 @@ public class SettingsFragment extends PreferenceFragment {
 				getFragmentManager().beginTransaction()
 						.replace(R.id.content_frame, new RaspberryPiSettingsFragment(), RaspberryPiSettingsFragment.TAG)
 						.addToBackStack(RaspberryPiSettingsFragment.TAG)
+						.commit();
+				break;
+			case MQTT_SCREEN_KEY:
+				getFragmentManager().beginTransaction()
+						.replace(R.id.content_frame, new MqttSettingsFragment(), MqttSettingsFragment.TAG)
+						.addToBackStack(MqttSettingsFragment.TAG)
 						.commit();
 				break;
 		}
@@ -406,6 +421,16 @@ public class SettingsFragment extends PreferenceFragment {
 
 	public static boolean isRaspiSharedPreferenceEnabled(Context context) {
 		return getBooleanSharedPreference(false, SETTINGS_SHOW_RASPI_BRICKS, context);
+	}
+
+	public static boolean isMqttSharedPreferenceEnabled(Context context) {
+		return getBooleanSharedPreference(false, SETTINGS_SHOW_MQTT_BRICKS, context);
+	}
+
+	public static void setMqttSharedPreferenceEnabled(Context context, boolean value) {
+		getSharedPreferences(context).edit()
+				.putBoolean(SETTINGS_SHOW_MQTT_BRICKS, value)
+				.apply();
 	}
 
 	public static boolean isNfcSharedPreferenceEnabled(Context context) {
