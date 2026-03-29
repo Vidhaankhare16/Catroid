@@ -43,7 +43,7 @@ class MqttSettingsFragment : PreferenceFragment() {
 
     override fun onResume() {
         super.onResume()
-        (activity as AppCompatActivity).supportActionBar?.title = preferenceScreen.title
+        (activity as? AppCompatActivity)?.supportActionBar?.title = preferenceScreen.title
     }
 
     override fun onActivityCreated(@Nullable savedInstanceState: Bundle?) {
@@ -51,8 +51,8 @@ class MqttSettingsFragment : PreferenceFragment() {
         SettingsFragment.setToChosenLanguage(activity)
         addPreferencesFromResource(R.xml.mqtt_preferences)
 
-        val mqttCheckBox = findPreference(MqttSettings.SETTINGS_SHOW_MQTT_BRICKS) as CheckBoxPreference
-        val connectionSettings = findPreference(MQTT_CONNECTION_SETTINGS_CATEGORY) as PreferenceCategory
+        val mqttCheckBox = findPreference(MqttSettings.SETTINGS_SHOW_MQTT_BRICKS) as? CheckBoxPreference ?: return
+        val connectionSettings = findPreference(MQTT_CONNECTION_SETTINGS_CATEGORY) as? PreferenceCategory ?: return
         connectionSettings.isEnabled = mqttCheckBox.isChecked
 
         mqttCheckBox.setOnPreferenceChangeListener { _, isChecked ->
@@ -60,14 +60,14 @@ class MqttSettingsFragment : PreferenceFragment() {
             true
         }
 
-        val host = findPreference(MqttSettings.MQTT_BROKER_HOST) as EditTextPreference
+        val host = findPreference(MqttSettings.MQTT_BROKER_HOST) as? EditTextPreference ?: return
         host.summary = host.text
         host.setOnPreferenceChangeListener { _, newValue ->
             host.summary = newValue.toString()
             true
         }
 
-        val port = findPreference(MqttSettings.MQTT_BROKER_PORT) as EditTextPreference
+        val port = findPreference(MqttSettings.MQTT_BROKER_PORT) as? EditTextPreference ?: return
         port.summary = port.text
         port.setOnPreferenceChangeListener { _, newValue ->
             val portValue = newValue.toString().toIntOrNull()
