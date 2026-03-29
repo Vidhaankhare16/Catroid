@@ -92,7 +92,7 @@ fun ProjectsCategoryApi.convertToProjectsCategory() = ProjectsCategory(this.type
 fun ProjectsCategoryApi.toProjectCategoryWithResponses(): ProjectCategoryWithResponses {
     return ProjectCategoryWithResponses(
         this.convertToProjectsCategory(),
-        this.projectsList.toProjectResponsesList(type)
+        this.projectsList?.toProjectResponsesList(type) ?: emptyList()
     )
 }
 

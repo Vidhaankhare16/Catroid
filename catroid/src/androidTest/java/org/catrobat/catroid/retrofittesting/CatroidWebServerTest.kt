@@ -201,7 +201,7 @@ class CatroidWebServerTest : KoinTest {
                 assertNotNull(it.name)
                 assertNotNull(it.type)
                 assertNotNull(it.projectsList)
-                it.projectsList.forEach { projectResponse ->
+                it.projectsList?.forEach { projectResponse ->
                     assertNotNull(projectResponse.id)
                     assertNotNull(projectResponse.name)
                     assertNotNull(projectResponse.author)

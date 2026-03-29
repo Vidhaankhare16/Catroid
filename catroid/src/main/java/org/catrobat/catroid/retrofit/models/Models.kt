@@ -102,7 +102,7 @@ data class ProjectCategoryWithResponses(
 data class ProjectsCategoryApi(
     val type: String,
     val name: String,
-    val projectsList: List<ProjectResponseApi>
+    val projectsList: List<ProjectResponseApi>?
 )
 
 @SuppressWarnings("ConstructorParameterNaming")
