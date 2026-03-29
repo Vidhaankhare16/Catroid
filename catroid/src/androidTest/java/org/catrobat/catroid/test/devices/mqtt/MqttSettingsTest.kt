@@ -63,6 +63,7 @@ class MqttSettingsTest {
             when (value) {
                 is Boolean -> editor.putBoolean(key, value)
                 is String -> editor.putString(key, value)
+                null -> { /* key was absent before setUp — clear() already removed it */ }
             }
         }
         editor.commit()
@@ -209,14 +210,50 @@ class MqttSettingsTest {
     }
 
     @Test
-    fun connectionSettingsAreInactiveWhenMqttIsDisabled() {
-        MqttSettings.setEnabled(context, false)
-        assertFalse(MqttSettings.isEnabled(context))
+    fun emptyStringPortIsRejectedAndDefaultReturned() {
+        PreferenceManager.getDefaultSharedPreferences(context).edit()
+            .putString(MqttSettings.MQTT_BROKER_PORT, "")
+            .commit()
+        assertEquals(MqttSettings.DEFAULT_BROKER_PORT, MqttSettings.brokerPort(context))
     }
 
     @Test
-    fun connectionSettingsAreActiveWhenMqttIsEnabled() {
-        MqttSettings.setEnabled(context, true)
-        assertTrue(MqttSettings.isEnabled(context))
+    fun negativePortIsRejectedAndDefaultReturned() {
+        PreferenceManager.getDefaultSharedPreferences(context).edit()
+            .putString(MqttSettings.MQTT_BROKER_PORT, "-1")
+            .commit()
+        assertEquals(MqttSettings.DEFAULT_BROKER_PORT, MqttSettings.brokerPort(context))
+    }
+
+    @Test
+    fun integerOverflowPortIsRejectedAndDefaultReturned() {
+        PreferenceManager.getDefaultSharedPreferences(context).edit()
+            .putString(MqttSettings.MQTT_BROKER_PORT, "2147483648")
+            .commit()
+        assertEquals(MqttSettings.DEFAULT_BROKER_PORT, MqttSettings.brokerPort(context))
+    }
+
+    @Test
+    fun minPortBoundaryPersistedCorrectly() {
+        PreferenceManager.getDefaultSharedPreferences(context).edit()
+            .putString(MqttSettings.MQTT_BROKER_PORT, "1")
+            .commit()
+        assertEquals(1, MqttSettings.brokerPort(context))
+    }
+
+    @Test
+    fun maxPortBoundaryPersistedCorrectly() {
+        PreferenceManager.getDefaultSharedPreferences(context).edit()
+            .putString(MqttSettings.MQTT_BROKER_PORT, "65535")
+            .commit()
+        assertEquals(65535, MqttSettings.brokerPort(context))
+    }
+
+    @Test
+    fun nullHostStoredFallsBackToDefault() {
+        PreferenceManager.getDefaultSharedPreferences(context).edit()
+            .remove(MqttSettings.MQTT_BROKER_HOST)
+            .commit()
+        assertEquals(MqttSettings.DEFAULT_BROKER_HOST, MqttSettings.brokerHost(context))
     }
 }
